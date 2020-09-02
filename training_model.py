@@ -34,7 +34,7 @@ def get_num_subfolders(path):
 image_width, image_height = 299, 299;
 num_epochs = 1
 batch_size = 32
-training_size = 100  # 100 => 100%
+training_size = 2  # 100 => 100%
 train_dir = 'data/train'
 validate_dir = 'data/validation'
 
@@ -97,22 +97,22 @@ print("")
 
 # Load the pretrained model
 #   Exclude the final fully connected layer (include_top=false)
-inceptionV3_base_model = InceptionV3(weights='imagenet', include_top=False)
+base_model = InceptionV3(weights='imagenet', include_top=False)
 
 
 # Define a new classifier to attach to the pretrained model
-x = inceptionV3_base_model.output
+x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(1024, activation='relu')(x)
 output = Dense(num_classes, activation='softmax')(x)
 
 
 # Merge the pretrained model and the new FC classifier
-model = Model(inputs=inceptionV3_base_model.input, outputs=output)
+model = Model(inputs=base_model.input, outputs=output)
 
 
 # Freeze all layers in the pretrained model
-for layer in inceptionV3_base_model.layers:
+for layer in base_model.layers:
     layer.trainable = False
 
 # Compile

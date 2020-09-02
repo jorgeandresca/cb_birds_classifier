@@ -3,7 +3,6 @@ from __future__ import print_function
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # This will hide those Keras messages
 
-
 """
     InvceptionV3 has input (299, 299, 3) ((in case the environment is configured to have the channel at the end)
 """
@@ -11,13 +10,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # This will hide those Keras messages
 
 from keras.applications.inception_v3 import InceptionV3, preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
-from keras.optimizers import SGD
-
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D
-
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 # Get number of files in folder and subfolders
 def get_num_files(path):
@@ -33,17 +30,16 @@ def get_num_subfolders(path):
     return sum([len(d) for r, d, files in os.walk(path)])
 
 
-
-
-# Main Code
+# Training variables
 image_width, image_height = 299, 299;
 num_epochs = 1
 batch_size = 32
-training_size = 100 # 100 => 100%
+training_size = 100  # 100 => 100%
+train_dir = 'data/train'
+validate_dir = 'data/validation'
 
 
-
-# Created variations of the images by rotating, shift up, down left, right, sheared, zoom in,
+# Creating variations of the images by rotating, shift up, down left, right, sheared, zoom in,
 #   or flipped horizontally on vertical axis
 def create_img_generator():
     return ImageDataGenerator(
@@ -54,13 +50,9 @@ def create_img_generator():
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True,
-        validation_split= (100 - training_size)/100  # This will split the dataset in Training and Validation subsets. This will make the training must smaller (testing purpose)
+        validation_split= (100 - training_size)/100  # This will split the dataset in Training and Validation subsets.
     )
 
-
-
-train_dir = 'data/train'
-validate_dir = 'data/validation'
 
 real_num_train_samples = get_num_files(train_dir)
 real_num_validate_samples = get_num_files(validate_dir)
@@ -135,7 +127,6 @@ hist = model.fit(
     steps_per_epoch=num_train_samples // batch_size,
     validation_data=validation_generator,
     validation_steps=num_validate_samples // batch_size
-    #class_weight='auto'
 )
 
 # Evaluate the model
@@ -145,6 +136,9 @@ print('Test loss: ', score_test[0])
 print('Test accuracy: ', score_test[1])
 
 
+# Saving model
+model.save('05_model.h5')
+
 
 # Printing the model
 epoch_list = list(range(1, len(hist.history['accuracy']) + 1))
@@ -153,12 +147,10 @@ print(epoch_list)
 print(hist.history['accuracy'])
 plt.plot(epoch_list, hist.history['accuracy'], epoch_list, hist.history['val_accuracy'])
 plt.legend(('Training Accuracy: ' +  str(score_train[1]), 'Validation Accuracy: ' + str(score_test[1])))
-plt.savefig('05_model_chart.png')
+plt.savefig('training_chart.png')
 plt.show()
 
 
-# Saving model
-model.save('05_model.h5')
 
 
 

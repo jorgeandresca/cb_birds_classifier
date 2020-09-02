@@ -6,7 +6,6 @@ from keras.applications.inception_v3 import preprocess_input
 from keras.applications.imagenet_utils import decode_predictions
 from keras.models import load_model
 import numpy as np
-import gc
 from io import BytesIO
 import requests
 
@@ -18,16 +17,6 @@ classifier = Blueprint("classifier", __name__)
 def home():
     return jsonify("Working")
 
-
-@classifier.route("/clean", methods=['GET', 'POST'])
-def clean():
-    print("\n\nclean\n\n")
-    global model
-    del model
-    model = None
-
-    gc.collect()
-    return jsonify("Done")
 
 
 @classifier.route("/classify_image", methods=['POST'])

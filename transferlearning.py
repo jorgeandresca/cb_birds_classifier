@@ -33,7 +33,7 @@ def get_num_subfolders(path):
 
 # Training variables
 image_width, image_height = 299, 299;
-num_epochs = 2
+num_epochs = 1
 batch_size = 32
 training_size = 2  # 100 => 100%
 train_dir = 'data/train'
@@ -78,12 +78,14 @@ train_generator = create_img_generator().flow_from_directory(
     subset='training'  # 2 options: Training / Validation. This works if ImageDataGenerator.validation_split is set.
 )
 
+
 validation_generator = create_img_generator().flow_from_directory(
     validate_dir,
     target_size=(image_width, image_height),
     batch_size=batch_size,
     seed=42
 )
+
 
 num_train_samples = len(train_generator.filepaths)
 num_validate_samples = len(validation_generator.filepaths)
@@ -96,10 +98,36 @@ print("")
 
 # Load the pretrained model
 #   Exclude the final fully connected layer (include_top=false)
-base_model = load_model('models/model 2020.09.02.h5')
+base_model = InceptionV3(weights='imagenet', include_top=False)
 
-model = base_model
 
+# Define a new classifier to attach to the pretrained model
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(1024, activation='relu')(x)
+output = Dense(num_classes, activation='softmax')(x)
+
+# Merge the pretrained model and the new FC classifier
+model = Model(inputs=base_model.input, outputs=output)
+
+
+
+# Freeze all layers in the pretrained model (BASE_MODEL)
+for layer in base_model.layers:
+    layer.trainable = False
+
+"""
+    print(model.summary()): 
+
+        Total params: 24,131,585
+        Trainable params: 2,328,801 (2.098.176 from our Dense 1024, and 230.625 (1025 * 225) from our output layer)
+        Non-trainable params: 21,802,784
+"""
+
+print(model.summary())
+
+
+"""
 
 # Compile
 #   We use categorical_crossentropy since our model is trying to classify categorical result
@@ -135,4 +163,4 @@ plt.plot(epoch_list, hist.history['accuracy'], epoch_list, hist.history['val_acc
 plt.legend(('Training Accuracy: ' +  str(score_train[1]), 'Validation Accuracy: ' + str(score_test[1])))
 plt.savefig('training_chart.png')
 plt.show()
-
+"""

@@ -20,7 +20,7 @@ def acc_classes(classesjson_file, acc_index):
         if x[0] > 0.001:
             result_list.append({
                 "accuracy": float(x[0]),
-                "class": classes[x[1]].replace("_", " ")
+                "class": classes[x[1]].replace("_", " ").title()
             })
 
     return result_list

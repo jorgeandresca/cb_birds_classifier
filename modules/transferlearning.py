@@ -26,7 +26,7 @@ num_epochs = 300
 batch_size = 32
 training_size = 85  # 100 => 100%
 dataset_dir = "../local/data/dataset"
-pretrained_model = "../local/models/0.834.h5"
+pretrained_model = ""
 output_model = "../local/models/model.h5"
 output_image = "../local/models/chart.png"
 outputs = "../local/models"
@@ -40,10 +40,10 @@ num_classes = get_num_subfolders(dataset_dir)
 img_generator = ImageDataGenerator(
         preprocessing_function=preprocess_input,
         rotation_range=30,
-        width_shift_range=0.3,
-        height_shift_range=0.3,
-        shear_range=0.3,
-        zoom_range=0.3,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        shear_range=0.2,
+        zoom_range=0.2,
         horizontal_flip=True,
         fill_mode="nearest",
         validation_split= (100 - training_size)/100  # This will split the dataset in Training and Validation subsets.
@@ -65,7 +65,6 @@ validation_generator = img_generator.flow_from_directory(
     #seed=42,
     subset="validation"
 )
-
 
 
 

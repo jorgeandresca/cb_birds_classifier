@@ -8,10 +8,8 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # This will hide those Keras messages
 """
 
 
-from helper import acc_class
+from modules.helper import subfolder_names
 
-prediction = [(0.55019504, 35), (0.44966635, 65), (0.00013862934, 81), (3.8286053e-08, 31), (3.96442e-15, 33)]
-
-res = acc_class("data/dataset", prediction)
+res = subfolder_names("../local/data/dataset")
 
 print(res)

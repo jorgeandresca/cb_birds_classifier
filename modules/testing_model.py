@@ -14,9 +14,9 @@ from modules.helper import acc_classes
 
 
 # ---------- Configuration ---------
-img_pil = Image.open("../local/data/test/toy_poodle_2.jpg")
+img_pil = Image.open("../local/data/test/Firefinch_African.jpg")
 dataset_dir = "../local/data/dataset"
-model = load_model("../local/models/0.828.h5")
+model = load_model("../local/models/0.866.h5")
 
 
 # Ensure the image is RGB since we need 3 channels

@@ -11,6 +11,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # This will hide those Keras messages
 from keras.applications.inception_v3 import InceptionV3, preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Model
+from keras import metrics
 from keras.models import load_model
 from keras.layers import Dense, GlobalAveragePooling2D
 from keras.optimizers import Adam
@@ -26,9 +27,10 @@ num_epochs = 300
 batch_size = 32
 training_size = 85  # 100 => 100%
 dataset_dir = "../local/data/dataset"
-pretrained_model = ""
+pretrained_model = "../local/models/0.866.H5"
 output_model = "../local/models/model.h5"
 output_image = "../local/models/chart.png"
+logs = "../local/models/logs"
 outputs = "../local/models"
 num_classes = get_num_subfolders(dataset_dir)
 
@@ -104,13 +106,25 @@ else:  # in case there is already a trained model.h5
 
 # Compile
 #   We use categorical_crossentropy since our model is trying to classify categorical result
-model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=[ "accuracy",
+                                                                            metrics.AUC(
+                                                                                num_thresholds=200,
+                                                                                curve="ROC",
+                                                                                summation_method="interpolation",
+                                                                                name=None,
+                                                                                dtype=None,
+                                                                                thresholds=None,
+                                                                                multi_label=False,
+                                                                                label_weights=None,
+                                                                            )])
 
 # Callbacks
 my_callbacks = [
     #tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=5),
-    tf.keras.callbacks.ModelCheckpoint(filepath=outputs + "/model.{epoch:02d}-{val_accuracy:.3f}.h5")
+    tf.keras.callbacks.ModelCheckpoint(filepath=outputs + "/model.{epoch:02d}-{val_accuracy:.3f}.h5"),
+    tf.keras.callbacks.TensorBoard(log_dir=logs, histogram_freq=1)
 ]
+
 
 # Fit
 hist = model.fit(

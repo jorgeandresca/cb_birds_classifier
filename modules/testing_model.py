@@ -14,7 +14,7 @@ from modules.helper import acc_classes
 
 
 # ---------- Configuration ---------
-img_pil = Image.open("../local/data/test/Firefinch_African.jpg")
+img_pil = Image.open("../local/data/test/1.jpeg")
 dataset_dir = "../local/data/dataset"
 model = load_model("../local/models/0.866.h5")
 
